@@ -85,8 +85,8 @@ public class KataWordsToNumbersTest {
 		result = KataWordsToNumbers.convertToInt("nine thousand and nine hundred and ninety-nine");
 		assertEquals("KataWordsToNumbers.convertToInt(\"nine thousand nine hundred and ninety-nine\")", 9999, result);
 		
-		result = KataWordsToNumbers.convertToInt("one thousand and one hundred and sixty-five");
-		assertEquals("KataWordsToNumbers.convertToInt(\"one thousand and one hundred and sixty-five\")", 1650, result);
+		result = KataWordsToNumbers.convertToInt("one thousand and six hundred and sixty-five");
+		assertEquals("KataWordsToNumbers.convertToInt(\"one thousand and six hundred and sixty-five\")", 1665, result);
 		
 		result = KataWordsToNumbers.convertToInt("two thousand and fifty-seven");
 		assertEquals("KataWordsToNumbers.convertToInt(\"two thousand and fifty-seven\")", 2057, result);
@@ -96,6 +96,39 @@ public class KataWordsToNumbersTest {
 		
 		result = KataWordsToNumbers.convertToInt("three thousand and one");
 		assertEquals("KataWordsToNumbers.convertToInt(\"three thousand and one\")", 3001, result);
+	}
+	
+	@Test 
+	public void testFiveDigits() {
+		int result = KataWordsToNumbers.convertToInt("ten thousand");
+		assertEquals("KataWordsToNumbers.convertToInt(\"ten thousand\")", 10000, result);
+		
+		result = KataWordsToNumbers.convertToInt("ninety-nine thousand and nine hundred and ninety-nine");
+		assertEquals("KataWordsToNumbers.convertToInt(\"ninety-nin thousand nine hundred and ninety-nine\")", 99999, result);
+		
+		result = KataWordsToNumbers.convertToInt("fifty thousand and six");
+		assertEquals("KataWordsToNumbers.convertToInt(\"fifty thousand and six\")", 50006, result);
+		
+		result = KataWordsToNumbers.convertToInt("thirty thousand and seventeen");
+		assertEquals("KataWordsToNumbers.convertToInt(\"thirty thousand and seventeen\")", 30017, result);
+		
+		result = KataWordsToNumbers.convertToInt("forty-two thousand and four hundred and four");
+		assertEquals("KataWordsToNumbers.convertToInt(\"forty-two thousand and four hundred and four\")", 42404, result);
+	}
+	
+	@Test
+	public void testSixDigits() {
+		int result = KataWordsToNumbers.convertToInt("one hundred thousand");
+		assertEquals("KataWordsToNumbers.convertToInt(\"one hundred thousand\")", 100000, result);
+		
+		result = KataWordsToNumbers.convertToInt("nine hundred and ninety-nine thousand and nine hundred and ninety-nine");
+		assertEquals("KataWordsToNumbers.convertToInt(\"nine hundred and ninety-nin thousand nine hundred and ninety-nine\")", 999999, result);
+		
+		result = KataWordsToNumbers.convertToInt("nine hundred thousand and six");
+		assertEquals("KataWordsToNumbers.convertToInt(\"nine hundred thousand and six\")", 900006, result);
+		
+		result = KataWordsToNumbers.convertToInt("eight hundred and sixteen thousand and eight hundred and sixteen");
+		assertEquals("KataWordsToNumbers.convertToInt(\"eight hundred and sixteen thousand and eight hundred and sixteen\")", 816816, result);
 	}
 	
 }
