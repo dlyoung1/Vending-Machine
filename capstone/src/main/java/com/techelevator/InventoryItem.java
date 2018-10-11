@@ -4,13 +4,13 @@ import java.math.BigDecimal;
 
 public class InventoryItem {
 	//class properties
-	protected String productName;
-	protected String type;
-	protected BigDecimal price;
-	protected int inventoryRemaining;
+	private String productName;
+	private String type;
+	private BigDecimal price;
+	private int inventoryRemaining;
 	
 	//constructor
-	public InventoryItem (String productName) {
+	public InventoryItem (String productName, String type, BigDecimal price) {
 		this.productName = productName;
 		this.type = type;
 		this.price = price;
@@ -44,7 +44,13 @@ public class InventoryItem {
 	}
 	
 	//methods?
-	
+	public void removeOneItem() {
+		if(this.inventoryRemaining > 0) {
+			this.inventoryRemaining -= 1;
+		} else {
+			System.out.println("No inventory remaining!");
+		}
+	}
 	
 	@Override
 	public String toString() {
