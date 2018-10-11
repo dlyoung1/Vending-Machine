@@ -38,4 +38,10 @@ public class InventoryItemTest {
 		Assert.assertEquals("Test 6", 0,  result);
 	}
 
+	
+	@Test
+	public void toStringTest() {
+		String result = test.toString();
+		Assert.assertEquals("Type: test. Item: test costs $0. There are 5 remaining", result);
+	}
 }
