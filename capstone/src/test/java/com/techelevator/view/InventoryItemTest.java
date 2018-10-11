@@ -9,7 +9,7 @@ import com.techelevator.InventoryItem;
 
 public class InventoryItemTest {
 	
-	private InventoryItem test = new InventoryItem("test", "test", new BigDecimal(0.0));
+	private InventoryItem test = new InventoryItem("test", new BigDecimal(0.0), "test");
 	
 	@Test
 	public void removeAnItem() {

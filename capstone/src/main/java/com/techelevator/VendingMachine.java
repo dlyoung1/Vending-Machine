@@ -64,7 +64,8 @@ public class VendingMachine {
 		try(Scanner fileScanner = new Scanner(file)) {
 			while(fileScanner.hasNextLine()) {
 				String[] tempArray = fileScanner.nextLine().split("[|]");
-				//InventoryItem item = new InventoryItem();
+				InventoryItem item = new InventoryItem(tempArray[1], new BigDecimal(tempArray[2]), tempArray[3]);
+				returnMap.put(tempArray[0], item);
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

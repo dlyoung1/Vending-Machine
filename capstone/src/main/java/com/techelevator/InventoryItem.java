@@ -10,7 +10,7 @@ public class InventoryItem {
 	private int inventoryRemaining;
 	
 	//constructor
-	public InventoryItem (String productName, String type, BigDecimal price) {
+	public InventoryItem (String productName, BigDecimal price, String type) {
 		this.productName = productName;
 		this.type = type;
 		this.price = price;
