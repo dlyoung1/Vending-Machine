@@ -7,8 +7,8 @@ import java.util.Scanner;
 
 public class Menu {
 
-	private PrintWriter out;
-	private Scanner in;
+	protected PrintWriter out;
+	protected Scanner in;
 
 	public Menu(InputStream input, OutputStream output) {
 		this.out = new PrintWriter(output);
@@ -24,7 +24,7 @@ public class Menu {
 		return choice;
 	}
 
-	private Object getChoiceFromUserInput(Object[] options) {
+	protected Object getChoiceFromUserInput(Object[] options) {
 		Object choice = null;
 		String userInput = in.nextLine();
 		try {
@@ -41,7 +41,7 @@ public class Menu {
 		return choice;
 	}
 
-	private void displayMenuOptions(Object[] options) {
+	protected void displayMenuOptions(Object[] options) {
 		out.println();
 		for(int i = 0; i < options.length; i++) {
 			int optionNum = i+1;

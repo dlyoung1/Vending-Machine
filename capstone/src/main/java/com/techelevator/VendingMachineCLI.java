@@ -18,7 +18,7 @@ public class VendingMachineCLI {
 	
 	public void run() {
 		
-		VendingMachine vm = new  VendingMachine(menu);
+		VendingMachine vm = new VendingMachine();
 		
 		while(true) {
 			String choice = (String)menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
