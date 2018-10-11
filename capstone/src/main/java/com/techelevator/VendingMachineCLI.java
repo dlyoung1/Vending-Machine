@@ -17,6 +17,9 @@ public class VendingMachineCLI {
 	}
 	
 	public void run() {
+		
+		VendingMachine vm = new  VendingMachine(menu);
+		
 		while(true) {
 			String choice = (String)menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 			
@@ -26,7 +29,7 @@ public class VendingMachineCLI {
 				//need to call the purchasing menu
 				//create new PurchasingMenu (will need Purchasing_Menu_Options String[])
 				//or like.... menu.runPurchaseMenu(PURCHASE_MENU_OPTIONS);
-				System.out.println("Thank you for making a purchase");
+				vm.run();
 			} else if (choice.equals(MAIN_MENU_OPTION_QUIT)) {
 				System.out.println("Ending program");
 				System.exit(0);
