@@ -9,14 +9,46 @@ public class InventoryItem {
 	protected BigDecimal price;
 	protected int inventoryRemaining;
 	
-	public InventoryItem () {
-		//set name, type, and price
-		//always set inventoryRemaining to 5
+	//constructor
+	public InventoryItem (String productName) {
+		this.productName = productName;
+		this.type = type;
+		this.price = price;
+		inventoryRemaining = 5;
+	}
+
+	//getters and setters
+	public String getProductName() {
+		return productName;
+	}
+	public void setProductName(String productName) {
+		this.productName = productName;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+	public BigDecimal getPrice() {
+		return price;
+	}
+	public void setPrice(BigDecimal price) {
+		this.price = price;
+	}
+	public int getInventoryRemaining() {
+		return inventoryRemaining;
+	}
+	public void setInventoryRemaining(int inventoryRemaining) {
+		this.inventoryRemaining = inventoryRemaining;
 	}
 	
-	//create Getters and Setters
-	//Setter for inventoryRemaining always -1 (only setting when buying an item)
-
 	//methods?
-	//make a toString method?
+	
+	
+	@Override
+	public String toString() {
+		String output = this.productName + "costs $" + this.price + ". There are " + this.inventoryRemaining + " remaining";
+		return output;
+	}
 }
