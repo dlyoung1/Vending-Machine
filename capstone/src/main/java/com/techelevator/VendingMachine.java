@@ -5,6 +5,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,42 +46,40 @@ public class VendingMachine {
 	private PrintWriter logWriter = null;
 	private PrintWriter salesReportWriter = null;
 	
+	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm:ss a"); 
+	
 	public VendingMachine () {
 		this.inventory = setInventory();
 		this.currentBalance = new BigDecimal(0.0);
 		this.menu = new PurchaseMenu(System.in, System.out);
-		//create log file at time of instantiation
+		
+		//create log file and logWriter at time of instantiation
 		this.log = new File("log.csv");
 		try {
 			log.createNewFile();
+			this.logWriter = new PrintWriter(this.log);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
+		
+	}	// close VendingMachine constructor
 	
 	//Getters and Setters
 	
 	public BigDecimal getCurrentBalance () {
 		return this.currentBalance;
-	}
+	}	// close getCurrentBalance
 	
 	public Map<String, InventoryItem> getInventory () {
 		return this.inventory;
-	}
+	}	// close getInventory
 	
 	private Map<String, InventoryItem> setInventory () {
 		Map<String, InventoryItem> returnMap = new LinkedHashMap<String, InventoryItem>();
 		
 		File file = new File(filePath);
 		
-//		try {
-//			file.createNewFile();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
 		try(Scanner fileScanner = new Scanner(file)) {
 			while(fileScanner.hasNextLine()) {
 				String[] tempArray = fileScanner.nextLine().split("[|]");
@@ -89,7 +92,7 @@ public class VendingMachine {
 		}
 		
 		return returnMap;
-	}
+	}	// close setInventory
 	
 	//Class Methods
 	
@@ -113,11 +116,11 @@ public class VendingMachine {
 				transactionComplete = true;
 			}
 		}
-	}
+	}	// close run
 	
 	public void displayInventory () {
 		
-	}
+	}	// close displayInventory
 	
 	public void validateSelectionFromUser () {
 		//TODO figure out if/when to close this.
@@ -138,29 +141,35 @@ public class VendingMachine {
 		} else {
 			System.out.println("That product does not exist.");
 		}
-	}
+	}	// close validateSelectionFromUser
 	
 	public InventoryItem dispenseItem () {
 		//provide selected item to customer
 		return null;
-	}
+	}	// close dispenseItem
 	
 	public void addMoney () {
 		//validate user input and add money to currentBalance
-
+		String moneyString = "";
 		String choice = (String)menu.getChoiceFromOptions(ADD_MONEY_OPTIONS);
 			
 		if(choice.equals(ADD_MONEY_ONE)) {
 			this.currentBalance = this.currentBalance.add(new BigDecimal(1.0));
+			moneyString = "$1.00";
 		} else if(choice.equals(ADD_MONEY_TWO)) {
 			this.currentBalance = this.currentBalance.add(new BigDecimal(2.0));
+			moneyString = "$2.00";
 		} else if(choice.equals(ADD_MONEY_FIVE)) {
 			this.currentBalance = this.currentBalance.add(new BigDecimal(5.0));
+			moneyString = "$5.00";
 		} else if(choice.equals(ADD_MONEY_TEN)) {
 			this.currentBalance = this.currentBalance.add(new BigDecimal(10.0));
+			moneyString = "$10.00";
 		}
-		//TODO - Write to Log
-	}
+		//TODO - Write to Log		
+		writeToLog("FEED MONEY", moneyString);
+
+	}	// close addMoney
 	
 	public BigDecimal[] returnChange() {
 		//Quarters, dimes, and nickels
@@ -181,6 +190,18 @@ public class VendingMachine {
 		}
 		
 		return changeList;
+	}	// close returnChange
+	
+	private void writeToLog(String operation, String moneyString) {
+		
+		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + " " + moneyString + " $" + this.currentBalance + "\n";
+		
+		try {
+			Files.write(Paths.get("log.csv"), logString.getBytes(), StandardOpenOption.APPEND);
+		} catch (IOException e) {
+			System.out.println("ERROR: WRITE TO LOG FAILED");
+			e.printStackTrace();
+		}
 	}
 	
-}
+}	// close VendingMachine
