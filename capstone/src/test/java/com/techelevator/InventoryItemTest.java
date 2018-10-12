@@ -1,4 +1,4 @@
-package com.techelevator.view;
+package com.techelevator;
 
 import java.math.BigDecimal;
 
@@ -41,23 +41,33 @@ public class InventoryItemTest {
 
 	@Test
 	public void itemSoundTest() {
-		String result = test.itemSound("chip");
+		
+		test.setType("chip");
+		String result = test.getItemSound();
 		Assert.assertEquals("Crunch Crunch, Yum!", result);
 	
-		result = test.itemSound("candy");
+		test.setType("cANdy");
+		result = test.getItemSound();
 		Assert.assertEquals("Munch Munch, Yum!", result);
 		
-		result = test.itemSound("drink");
+		test.setType("drink");
+		result = test.getItemSound();
 		Assert.assertEquals("Glug Glug, Yum!", result);
 	
-		result = test.itemSound("gum");
+		test.setType("gum");
+		result = test.getItemSound();
 		Assert.assertEquals("Chew Chew, Yum!", result);
 	}
 	
 	@Test
 	public void itemSoundNotEqualsTest() {
-		String result = test.itemSound("chip");
+		test.setType("gum");
+		String result = test.getItemSound();
 		Assert.assertNotEquals("Munch Munch, Yum!", result);
+		
+		test.setType("drink");
+		result = test.getItemSound();
+		Assert.assertNotEquals("Crunch Crunch, Yum!", result);
 	}
 	
 	
