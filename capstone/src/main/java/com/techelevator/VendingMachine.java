@@ -3,6 +3,7 @@ package com.techelevator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -21,7 +22,8 @@ public class VendingMachine {
 	private static final String[] PURCHASE_MENU_OPTIONS = {PURCHASE_MENU_OPTION_FEED, 
 														  PURCHASE_MENU_OPTION_SELECT, PURCHASE_MENU_OPTION_FINISH};
 	
-	private static final String filePath = "/Users/mnachman/repos/team-exercises/team3-java-week4-pair-exercises/capstone/vendingmachine.csv";
+	//private static final String filePath = "/Users/mnachman/repos/team-exercises/team3-java-week4-pair-exercises/capstone/vendingmachine.csv";
+	private static final String filePath = "vendingmachine.csv";
 	
 	//Money options list
 	private static final String ADD_MONEY_ONE = "Add $1";
@@ -30,15 +32,27 @@ public class VendingMachine {
 	private static final String ADD_MONEY_TEN = "Add $10";
 	private static final String[] ADD_MONEY_OPTIONS = {ADD_MONEY_ONE, ADD_MONEY_TWO, ADD_MONEY_FIVE, ADD_MONEY_TEN};
 	
-	PurchaseMenu menu;
-	BigDecimal currentBalance;
-	Map<String, InventoryItem> inventory;
-	List purchasedItems;			//Maybe???
+	private PurchaseMenu menu;
+	private BigDecimal currentBalance;
+	private Map<String, InventoryItem> inventory;
+	private List purchasedItems;			//Maybe???
+	private File log = null;
+	private File salesReport = null;
+	private PrintWriter logWriter = null;
+	private PrintWriter salesReportWriter = null;
 	
 	public VendingMachine () {
 		this.inventory = setInventory();
 		this.currentBalance = new BigDecimal(0.0);
 		this.menu = new PurchaseMenu(System.in, System.out);
+		//create log file at time of instantiation
+		this.log = new File("log.csv");
+		try {
+			log.createNewFile();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	//Getters and Setters
@@ -56,13 +70,13 @@ public class VendingMachine {
 		
 		File file = new File(filePath);
 		
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+//		try {
+//			file.createNewFile();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
 		try(Scanner fileScanner = new Scanner(file)) {
 			while(fileScanner.hasNextLine()) {
 				String[] tempArray = fileScanner.nextLine().split("[|]");
