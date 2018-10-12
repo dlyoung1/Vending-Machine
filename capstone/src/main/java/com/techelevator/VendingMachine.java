@@ -20,40 +20,23 @@ import java.util.Scanner;
 import com.techelevator.view.PurchaseMenu;
 
 public class VendingMachine {
-
-	private static final String PURCHASE_MENU_OPTION_FEED = "Feed Money";
-	private static final String PURCHASE_MENU_OPTION_SELECT = "Select Product";
-	private static final String PURCHASE_MENU_OPTION_FINISH = "Finish Transaction";
-	private static final String[] PURCHASE_MENU_OPTIONS = {PURCHASE_MENU_OPTION_FEED, 
-														  PURCHASE_MENU_OPTION_SELECT, PURCHASE_MENU_OPTION_FINISH};
 	
 	//private static final String filePath = "/Users/mnachman/repos/team-exercises/team3-java-week4-pair-exercises/capstone/vendingmachine.csv";
 	private static final String filePath = "vendingmachine.csv";
 	
-	//Money options list
-	private static final String ADD_MONEY_ONE = "Add $1";
-	private static final String ADD_MONEY_TWO = "Add $2";
-	private static final String ADD_MONEY_FIVE = "Add $5";
-	private static final String ADD_MONEY_TEN = "Add $10";
-	private static final String[] ADD_MONEY_OPTIONS = {ADD_MONEY_ONE, ADD_MONEY_TWO, ADD_MONEY_FIVE, ADD_MONEY_TEN};
-	
-	private PurchaseMenu menu;
 	private BigDecimal currentBalance;
 	private Map<String, InventoryItem> inventory;
 	private Map<String, Integer> itemsSold;
 	private List<InventoryItem> purchasedItems;
 	private File log = null;
-	//private File salesReport = null;
-	//private PrintWriter logWriter = null;
-	//private PrintWriter salesReportWriter = null;
 	
 	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm:ss a"); 
 	
 	public VendingMachine () {
 		this.inventory = stockVendingMachine();
 		this.itemsSold = createSalesList(this.inventory);
+		this.purchasedItems = new ArrayList<InventoryItem>();
 		this.currentBalance = new BigDecimal(0.0);
-		this.menu = new PurchaseMenu(System.in, System.out);
 		
 		//create log file and logWriter at time of instantiation
 		this.log = new File("log.csv");
@@ -73,11 +56,19 @@ public class VendingMachine {
 		return this.currentBalance;
 	}	// close getCurrentBalance
 	
+	public void addToCurrentBalance (BigDecimal muns) {
+		this.currentBalance = sS(this.currentBalance).add(sS(muns));
+	}
+	
 	public Map<String, InventoryItem> getInventory () {
 		return this.inventory;
 	}	// close getInventory
 	
-	private Map<String, InventoryItem> stockVendingMachine () {
+	public List<InventoryItem> getPurchasedItems() {
+		return this.purchasedItems;
+	}	// close getPurchasedItems
+	
+	public Map<String, InventoryItem> stockVendingMachine () {
 		Map<String, InventoryItem> returnMap = new LinkedHashMap<String, InventoryItem>();
 		
 		File file = new File(filePath);
@@ -110,84 +101,10 @@ public class VendingMachine {
 	}
 	
 	//Class Methods
-	
-	public List<InventoryItem> run () {
-		//create new list each time vending machine is run
-		this.purchasedItems = new ArrayList<InventoryItem>();
-		
-		boolean transactionComplete = false;
-		
-		while(!transactionComplete) {
-			String choice = (String)menu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS, this.currentBalance);
-			
-			if(choice.equals(PURCHASE_MENU_OPTION_FEED)) {
-				addMoney();
-			} else if(choice.equals(PURCHASE_MENU_OPTION_SELECT)) {
-				String itemSelect = validateSelectionFromUser();
-				if(itemSelect != null) {
-					dispenseItem(itemSelect);
-				}
-			} else if(choice.equals(PURCHASE_MENU_OPTION_FINISH)) {
-				System.out.println("Thank you for your purchase(s)!");
-				BigDecimal[] change = returnChange();
-				System.out.println("Your change is: $" + change[0].setScale(2, BigDecimal.ROUND_HALF_UP) + " in quarters, $" 
-						+ change[1].setScale(2, BigDecimal.ROUND_HALF_UP) + " in dimes, and $" 
-						+ change[2].setScale(2, BigDecimal.ROUND_HALF_UP) + " in nickels.");
-				System.out.println("Current Balance: $" + this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP));
-				transactionComplete = true;
-			}
-		}	// close while
-		return this.purchasedItems;
-	}	// close run
-	
-	public void displayInventory () {
-		//Iterate and print out the following:
-		//Item Location: Item Name, Price
-		//ex: A1: Potato Crisps, $3.05
-		//if quantity = 0 then display SOLD OUT
-		for(String a : inventory.keySet()) {
-			if(inventory.get(a).getInventoryRemaining() > 0) {
-				System.out.println(a + ": " 
-						+ inventory.get(a).getProductName() 
-						+ ", $" 
-						+ sS(inventory.get(a).getPrice()));
-			} else {
-				System.out.println(a + ": SOLD OUT");
-			}
-		}
-		
-	}	// close displayInventory
-	
-	public String validateSelectionFromUser () {
-		//TODO figure out if/when to close this.
-		Scanner input = new Scanner(System.in);
-		
-		System.out.print("Please enter the product code of the item you wish to purchase: ");
-		String productCode = input.nextLine().toUpperCase();
-		
-		if(this.inventory.containsKey(productCode)) {
-			if(this.inventory.get(productCode).getInventoryRemaining() > 0) {
-				if(sS(getCurrentBalance()).compareTo(sS(this.inventory.get(productCode).getPrice())) >= 0) {
-					return productCode;
-				} else {
-					System.out.println("You have not fed enough money to the vending machine to purchase this item.");
-					productCode = null;
-				}
-			} else {
-				System.out.println("I'm sorry, but we're out of that product.");
-				productCode = null;
-			}
-		} else {
-			System.out.println("Please enter a valid product code.");
-			productCode = null;
-		}
-		return productCode;
-	}	// close validateSelectionFromUser
-	
+
 	public InventoryItem dispenseItem (String productCode) {
 
 		this.inventory.get(productCode).removeOneItem();
-		System.out.println("You bought: " + this.inventory.get(productCode).getProductName());
 	
 		BigDecimal preTransactionBalance = this.currentBalance;
 		this.currentBalance = this.currentBalance.subtract(this.inventory.get(productCode).getPrice());
@@ -204,31 +121,14 @@ public class VendingMachine {
 		String purchaseString = this.inventory.get(productCode).getProductName() + " " + productCode;
 		
 		writeToLog(purchaseString, preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
-		return null;
+		
+		return this.inventory.get(productCode);
 	}	// close dispenseItem
 	
-	public void addMoney () {
-		//validate user input and add money to currentBalance
-		String moneyString = "";
-		String choice = (String)menu.getChoiceFromOptions(ADD_MONEY_OPTIONS);
-			
-		if(choice.equals(ADD_MONEY_ONE)) {
-			this.currentBalance = this.currentBalance.add(new BigDecimal(1.0));
-			moneyString = "1.00";
-		} else if(choice.equals(ADD_MONEY_TWO)) {
-			this.currentBalance = this.currentBalance.add(new BigDecimal(2.0));
-			moneyString = "2.00";
-		} else if(choice.equals(ADD_MONEY_FIVE)) {
-			this.currentBalance = this.currentBalance.add(new BigDecimal(5.0));
-			moneyString = "5.00";
-		} else if(choice.equals(ADD_MONEY_TEN)) {
-			this.currentBalance = this.currentBalance.add(new BigDecimal(10.0));
-			moneyString = "10.00";
-		}
-		
-		writeToLog("FEED MONEY:", moneyString);
-
-	}	// close addMoney
+	public void updateBalance(String money) {
+		addToCurrentBalance(new BigDecimal(money));
+		writeToLog("FEED MONEY:", money);
+	}	// close updateBalance
 	
 	public BigDecimal[] returnChange() {
 		//Quarters, dimes, and nickels
@@ -249,7 +149,6 @@ public class VendingMachine {
 			this.currentBalance = sS(this.currentBalance).subtract(sS(dime));
 			changeList[1] = changeList[1].add(sS(dime));
 		}
-		//TODO fix problems here
 		while(sS(this.currentBalance).compareTo(sS(nickel)) >= 0) {	//while the balance is greater than 0.05
 			this.currentBalance = sS(this.currentBalance).subtract(sS(nickel));
 			changeList[2] = changeList[2].add(sS(nickel));
@@ -283,7 +182,7 @@ public class VendingMachine {
 	 * BigDecimal SetScale
 	 * @param bd
 	 */
-	private BigDecimal sS(BigDecimal bd) {
+	public BigDecimal sS(BigDecimal bd) {
 		//so I don't have to write setScale so many times and clutter things up.
 		return bd.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}

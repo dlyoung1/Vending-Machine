@@ -47,8 +47,6 @@ public class InventoryItem {
 	public void removeOneItem() {
 		if(this.inventoryRemaining > 0) {
 			this.inventoryRemaining -= 1;
-		} else {
-			System.out.println("No inventory remaining!");
 		}
 	}
 	
