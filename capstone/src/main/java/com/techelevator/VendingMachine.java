@@ -3,7 +3,7 @@ package com.techelevator;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintWriter;
+//import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
-import com.techelevator.view.Menu;
+//import com.techelevator.view.Menu;
 import com.techelevator.view.PurchaseMenu;
 
 public class VendingMachine {
@@ -44,7 +44,7 @@ public class VendingMachine {
 	private List<InventoryItem> purchasedItems;
 	private File log = null;
 	//private File salesReport = null;
-	private PrintWriter logWriter = null;
+	//private PrintWriter logWriter = null;
 	//private PrintWriter salesReportWriter = null;
 	
 	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm:ss a"); 

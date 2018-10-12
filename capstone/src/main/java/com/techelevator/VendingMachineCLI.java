@@ -46,8 +46,14 @@ public class VendingMachineCLI {
 			} else if (choice.equals(MAIN_MENU_OPTION_QUIT)) {
 				//fake report
 				Map<String, Integer> salesOutput = vm.getSalesList();
-				//BONUS: append current milliseconds to file name
+				//BONUS: append current date/time to file name
 				File salesReport = new File("SalesReport.csv");
+				
+				//destroy old file to avoid constant appending
+				if(salesReport.exists()) {
+					salesReport.delete();
+				}
+				
 				try {
 					salesReport.createNewFile();
 					
