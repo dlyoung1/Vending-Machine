@@ -148,12 +148,17 @@ public class VendingMachine {
 	}	// close validateSelectionFromUser
 	
 	public InventoryItem dispenseItem (String productCode) {
-		//provide selected item to customer
-		//play sound "itemSound()"
+
 		this.inventory.get(productCode).removeOneItem();
 		System.out.println("You bought: " + this.inventory.get(productCode).getProductName());
-		//TODO actually purchase item
-		//TODO write to log
+	
+		BigDecimal preTransactionBalance = this.currentBalance;
+		this.currentBalance = this.currentBalance.subtract(this.inventory.get(productCode).getPrice());
+	
+		//add item to list of purchased items
+		purchasedItems.add(this.inventory.get(productCode));
+		
+		writeToLog(this.inventory.get(productCode).getProductName(), preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 		return null;
 	}	// close dispenseItem
 	
@@ -164,18 +169,18 @@ public class VendingMachine {
 			
 		if(choice.equals(ADD_MONEY_ONE)) {
 			this.currentBalance = this.currentBalance.add(new BigDecimal(1.0));
-			moneyString = "$1.00";
+			moneyString = "1.00";
 		} else if(choice.equals(ADD_MONEY_TWO)) {
 			this.currentBalance = this.currentBalance.add(new BigDecimal(2.0));
-			moneyString = "$2.00";
+			moneyString = "2.00";
 		} else if(choice.equals(ADD_MONEY_FIVE)) {
 			this.currentBalance = this.currentBalance.add(new BigDecimal(5.0));
-			moneyString = "$5.00";
+			moneyString = "5.00";
 		} else if(choice.equals(ADD_MONEY_TEN)) {
 			this.currentBalance = this.currentBalance.add(new BigDecimal(10.0));
-			moneyString = "$10.00";
+			moneyString = "10.00";
 		}
-		//TODO - Write to Log		
+		
 		writeToLog("FEED MONEY", moneyString);
 
 	}	// close addMoney
@@ -198,12 +203,28 @@ public class VendingMachine {
 			changeList[2] = changeList[2].add(new BigDecimal(0.05));
 		}
 		
+		//Play all sounds
+		for(int i = 0; i < purchasedItems.size(); i++) {
+			purchasedItems.get(i).playItemSound();
+		}
+		//Clear list ????
+		for(int i = 0; i < purchasedItems.size(); i++) {
+			purchasedItems.remove(i);
+		}
+		
+		//Write to log
+		
 		return changeList;
 	}	// close returnChange
 	
+	/**
+	 * Writes current transaction to the audit log file
+	 * @param String operation
+	 * @param String moneyString
+	 */
 	private void writeToLog(String operation, String moneyString) {
 		
-		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + " " 
+		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + " $" 
 				+ moneyString + " $" + this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP) + "\n";
 		
 		try {
