@@ -1,10 +1,8 @@
-package com.techelevator;
+package com.techelevator.view;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
-
-import com.techelevator.view.Menu;
 
 public class PurchaseMenu extends Menu {
 
