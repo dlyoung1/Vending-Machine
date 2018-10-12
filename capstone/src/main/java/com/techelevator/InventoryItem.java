@@ -54,7 +54,8 @@ public class InventoryItem {
 	
 	@Override
 	public String toString() {
-		String output = "Type: " + this.type + ". Item: " + this.productName + " costs $" + this.price + ". There are " + this.inventoryRemaining + " remaining";
+		//String output = "Type: " + this.type + ". Item: " + this.productName + " costs $" + this.price + ". There are " + this.inventoryRemaining + " remaining";
+		String output = "Item: " + this.productName + " costs $" + this.price;
 		return output;
 	}
 }
