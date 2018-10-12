@@ -40,7 +40,7 @@ public class VendingMachine {
 	private PurchaseMenu menu;
 	private BigDecimal currentBalance;
 	private Map<String, InventoryItem> inventory;
-	private Map<InventoryItem, Integer> itemsSold;
+	private Map<String, Integer> itemsSold;
 	private List<InventoryItem> purchasedItems;
 	private File log = null;
 	//private File salesReport = null;
@@ -51,6 +51,7 @@ public class VendingMachine {
 	
 	public VendingMachine () {
 		this.inventory = stockVendingMachine();
+		this.itemsSold = createSalesList(this.inventory);
 		this.currentBalance = new BigDecimal(0.0);
 		this.menu = new PurchaseMenu(System.in, System.out);
 		
@@ -91,10 +92,18 @@ public class VendingMachine {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		//create itemsSold map
-		
 		return returnMap;
 	}	// close setInventory
+	
+	private Map<String, Integer> createSalesList(Map<String, InventoryItem> itemList) {
+		//create itemsSold map
+		Map<String, Integer> tempMap = new LinkedHashMap<String, Integer>();
+		
+		for(InventoryItem a : itemList.values()) {
+			tempMap.put(a.getProductName(), 0);
+		}
+		return tempMap;
+	}
 	
 	//Class Methods
 	
@@ -162,6 +171,8 @@ public class VendingMachine {
 	
 		//add item to list of purchased items
 		purchasedItems.add(this.inventory.get(productCode));
+		
+		//note sale in salesList
 		
 		writeToLog(this.inventory.get(productCode).getProductName(), preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 		return null;
