@@ -11,7 +11,6 @@ import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,16 +40,18 @@ public class VendingMachine {
 	private PurchaseMenu menu;
 	private BigDecimal currentBalance;
 	private Map<String, InventoryItem> inventory;
-	private List<InventoryItem> purchasedItems = new ArrayList<InventoryItem>();			//Maybe???
+	private Map<String, Integer> itemsSold;
+	private List<InventoryItem> purchasedItems;
 	private File log = null;
-	private File salesReport = null;
+	//private File salesReport = null;
 	private PrintWriter logWriter = null;
-	private PrintWriter salesReportWriter = null;
+	//private PrintWriter salesReportWriter = null;
 	
 	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("MM/dd/yyyy h:mm:ss a"); 
 	
 	public VendingMachine () {
-		this.inventory = setInventory();
+		this.inventory = stockVendingMachine();
+		this.itemsSold = createSalesList(this.inventory);
 		this.currentBalance = new BigDecimal(0.0);
 		this.menu = new PurchaseMenu(System.in, System.out);
 		
@@ -76,7 +77,7 @@ public class VendingMachine {
 		return this.inventory;
 	}	// close getInventory
 	
-	private Map<String, InventoryItem> setInventory () {
+	private Map<String, InventoryItem> stockVendingMachine () {
 		Map<String, InventoryItem> returnMap = new LinkedHashMap<String, InventoryItem>();
 		
 		File file = new File(filePath);
@@ -91,13 +92,25 @@ public class VendingMachine {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		return returnMap;
 	}	// close setInventory
 	
+	private Map<String, Integer> createSalesList(Map<String, InventoryItem> itemList) {
+		//create itemsSold map
+		Map<String, Integer> tempMap = new LinkedHashMap<String, Integer>();
+		
+		for(InventoryItem a : itemList.values()) {
+			tempMap.put(a.getProductName(), 0);
+		}
+		return tempMap;
+	}
+	
 	//Class Methods
 	
-	public void run () {
+	public List<InventoryItem> run () {
+		//create new list each time vending machine is run
+		this.purchasedItems = new ArrayList<InventoryItem>();
+		
 		boolean transactionComplete = false;
 		
 		while(!transactionComplete) {
@@ -119,7 +132,8 @@ public class VendingMachine {
 				System.out.println("Current Balance: $" + this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP));
 				transactionComplete = true;
 			}
-		}
+		}	// close while
+		return this.purchasedItems;
 	}	// close run
 	
 	public void displayInventory () {
@@ -158,6 +172,8 @@ public class VendingMachine {
 		//add item to list of purchased items
 		purchasedItems.add(this.inventory.get(productCode));
 		
+		//note sale in salesList
+		
 		writeToLog(this.inventory.get(productCode).getProductName(), preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 		return null;
 	}	// close dispenseItem
@@ -187,6 +203,8 @@ public class VendingMachine {
 	
 	public BigDecimal[] returnChange() {
 		//Quarters, dimes, and nickels
+		
+		BigDecimal preTransactionBalance = this.currentBalance;
 		BigDecimal[] changeList = new BigDecimal[] {new BigDecimal(0), new BigDecimal(0), new BigDecimal(0)};
 		
 		while(this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP).compareTo(new BigDecimal(0.25)) == 1) {	//while the balance is greater than 0.25
@@ -203,16 +221,8 @@ public class VendingMachine {
 			changeList[2] = changeList[2].add(new BigDecimal(0.05));
 		}
 		
-		//Play all sounds
-		for(int i = 0; i < purchasedItems.size(); i++) {
-			purchasedItems.get(i).playItemSound();
-		}
-		//Clear list ????
-		for(int i = 0; i < purchasedItems.size(); i++) {
-			purchasedItems.remove(i);
-		}
-		
 		//Write to log
+		writeToLog("GIVE CHANGE", preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 		
 		return changeList;
 	}	// close returnChange

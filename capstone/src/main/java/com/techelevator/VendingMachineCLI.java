@@ -1,5 +1,7 @@
 package com.techelevator;
 
+import java.util.List;
+
 import com.techelevator.view.Menu;
 
 public class VendingMachineCLI {
@@ -29,7 +31,12 @@ public class VendingMachineCLI {
 				//need to call the purchasing menu
 				//create new PurchasingMenu (will need Purchasing_Menu_Options String[])
 				//or like.... menu.runPurchaseMenu(PURCHASE_MENU_OPTIONS);
-				vm.run();
+				List<InventoryItem> eatThis = vm.run();
+				//Put consumption here
+				for(int i = 0; i < eatThis.size(); i++) {
+					System.out.println(eatThis.get(i).getItemSound());
+				}
+				
 			} else if (choice.equals(MAIN_MENU_OPTION_QUIT)) {
 				System.out.println("Ending program");
 				System.exit(0);
