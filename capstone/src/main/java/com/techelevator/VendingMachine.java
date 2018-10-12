@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -40,7 +41,7 @@ public class VendingMachine {
 	private PurchaseMenu menu;
 	private BigDecimal currentBalance;
 	private Map<String, InventoryItem> inventory;
-	private List purchasedItems;			//Maybe???
+	private List<InventoryItem> purchasedItems = new ArrayList<InventoryItem>();			//Maybe???
 	private File log = null;
 	private File salesReport = null;
 	private PrintWriter logWriter = null;
@@ -105,7 +106,10 @@ public class VendingMachine {
 			if(choice.equals(PURCHASE_MENU_OPTION_FEED)) {
 				addMoney();
 			} else if(choice.equals(PURCHASE_MENU_OPTION_SELECT)) {
-				validateSelectionFromUser();
+				String itemSelect = validateSelectionFromUser();
+				if(itemSelect != null) {
+					dispenseItem(itemSelect);
+				}
 			} else if(choice.equals(PURCHASE_MENU_OPTION_FINISH)) {
 				System.out.println("Thank you for your purchase(s)!");
 				BigDecimal[] change = returnChange();
@@ -122,7 +126,7 @@ public class VendingMachine {
 		
 	}	// close displayInventory
 	
-	public void validateSelectionFromUser () {
+	public String validateSelectionFromUser () {
 		//TODO figure out if/when to close this.
 		Scanner input = new Scanner(System.in);
 		
@@ -131,20 +135,25 @@ public class VendingMachine {
 		
 		if(this.inventory.containsKey(productCode)) {
 			if(this.inventory.get(productCode).getInventoryRemaining() > 0) {
-				this.inventory.get(productCode).removeOneItem();
-				System.out.println("You bought: " + this.inventory.get(productCode));
-				//TODO actually purchase item
-				//TODO write to log
+				return productCode;
 			} else {
 				System.out.println("I'm sorry, but we're out of that product.");
+				productCode = null;
 			}
 		} else {
 			System.out.println("That product does not exist.");
+			productCode = null;
 		}
+		return productCode;
 	}	// close validateSelectionFromUser
 	
-	public InventoryItem dispenseItem () {
+	public InventoryItem dispenseItem (String productCode) {
 		//provide selected item to customer
+		//play sound "itemSound()"
+		this.inventory.get(productCode).removeOneItem();
+		System.out.println("You bought: " + this.inventory.get(productCode).getProductName());
+		//TODO actually purchase item
+		//TODO write to log
 		return null;
 	}	// close dispenseItem
 	
@@ -194,7 +203,8 @@ public class VendingMachine {
 	
 	private void writeToLog(String operation, String moneyString) {
 		
-		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + " " + moneyString + " $" + this.currentBalance + "\n";
+		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + " " 
+				+ moneyString + " $" + this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP) + "\n";
 		
 		try {
 			Files.write(Paths.get("log.csv"), logString.getBytes(), StandardOpenOption.APPEND);
