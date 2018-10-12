@@ -56,16 +56,12 @@ public class InventoryItem {
 		String sound = null;
 		if(this.type.equalsIgnoreCase("chip")) {
 			sound = "Crunch Crunch, Yum!";
-			System.out.println(sound);
 		} else if(this.type.equalsIgnoreCase("candy")) {
 			sound = "Munch Munch, Yum!";
-			System.out.println(sound);
 		} else if(this.type.equalsIgnoreCase("drink")) {
 			sound = "Glug Glug, Yum!";
-			System.out.println(sound);
 		} else if(this.type.equalsIgnoreCase("gum")) {
 			sound = "Chew Chew, Yum!";
-			System.out.println(sound);
 		}
 		return sound;
 	}
