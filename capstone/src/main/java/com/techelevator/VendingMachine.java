@@ -59,7 +59,7 @@ public class VendingMachine {
 		this.log = new File("log.csv");
 		try {
 			log.createNewFile();
-			this.logWriter = new PrintWriter(this.log);
+			//this.logWriter = new PrintWriter(this.log);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -103,6 +103,10 @@ public class VendingMachine {
 			tempMap.put(a.getProductName(), 0);
 		}
 		return tempMap;
+	}
+	
+	public Map<String, Integer> getSalesList() {
+		return this.itemsSold;
 	}
 	
 	//Class Methods
@@ -173,6 +177,10 @@ public class VendingMachine {
 		purchasedItems.add(this.inventory.get(productCode));
 		
 		//note sale in salesList
+		//find item string key, increase value by +1
+		//MAKE THIS A METHOD??
+		Integer a = itemsSold.get(this.inventory.get(productCode).getProductName()) + 1;
+		itemsSold.put(this.inventory.get(productCode).getProductName(), a);
 		
 		writeToLog(this.inventory.get(productCode).getProductName(), preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 		return null;
@@ -222,7 +230,7 @@ public class VendingMachine {
 		}
 		
 		//Write to log
-		writeToLog("GIVE CHANGE", preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+		writeToLog("GIVE CHANGE", sS(preTransactionBalance).toString());
 		
 		return changeList;
 	}	// close returnChange
@@ -235,7 +243,7 @@ public class VendingMachine {
 	private void writeToLog(String operation, String moneyString) {
 		
 		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + " $" 
-				+ moneyString + " $" + this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP) + "\n";
+				+ moneyString + " $" + sS(this.currentBalance) + "\n";
 		
 		try {
 			Files.write(Paths.get("log.csv"), logString.getBytes(), StandardOpenOption.APPEND);
@@ -243,6 +251,15 @@ public class VendingMachine {
 			System.out.println("ERROR: WRITE TO LOG FAILED");
 			e.printStackTrace();
 		}
+	}	// close writeToLog
+	
+	/**
+	 * BigDecimal SetScale
+	 * @param bd
+	 */
+	private BigDecimal sS(BigDecimal bd) {
+		//so I don't have to write setScale so many times and clutter things up.
+		return bd.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}
 	
 }	// close VendingMachine
