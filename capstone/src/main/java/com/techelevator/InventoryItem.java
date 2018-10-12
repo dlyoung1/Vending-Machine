@@ -52,6 +52,24 @@ public class InventoryItem {
 		}
 	}
 	
+	public String itemSound(String type) {
+		String sound = null;
+		if(type.equalsIgnoreCase("chip")) {
+			sound = "Crunch Crunch, Yum!";
+			System.out.println(sound);
+		} else if(type.equalsIgnoreCase("candy")) {
+			sound = "Munch Munch, Yum!";
+			System.out.println(sound);
+		} else if(type.equalsIgnoreCase("drink")) {
+			sound = "Glug Glug, Yum!";
+			System.out.println(sound);
+		} else if(type.equalsIgnoreCase("gum")) {
+			sound = "Chew Chew, Yum!";
+			System.out.println(sound);
+		}
+		return sound;
+	}
+	
 	@Override
 	public String toString() {
 		//String output = "Type: " + this.type + ". Item: " + this.productName + " costs $" + this.price + ". There are " + this.inventoryRemaining + " remaining";
