@@ -41,7 +41,7 @@ public class VendingMachine {
 	private PurchaseMenu menu;
 	private BigDecimal currentBalance;
 	private Map<String, InventoryItem> inventory;
-	private List<InventoryItem> purchasedItems = new ArrayList<InventoryItem>();			//Maybe???
+	private List<InventoryItem> purchasedItems;
 	private File log = null;
 	private File salesReport = null;
 	private PrintWriter logWriter = null;
@@ -98,6 +98,9 @@ public class VendingMachine {
 	//Class Methods
 	
 	public void run () {
+		//create new list each time vending machine is run
+		this.purchasedItems = new ArrayList<InventoryItem>();
+		
 		boolean transactionComplete = false;
 		
 		while(!transactionComplete) {
@@ -206,10 +209,6 @@ public class VendingMachine {
 		//Play all sounds
 		for(int i = 0; i < purchasedItems.size(); i++) {
 			purchasedItems.get(i).playItemSound();
-		}
-		//Clear list ????
-		for(int i = 0; i < purchasedItems.size(); i++) {
-			purchasedItems.remove(i);
 		}
 		
 		//Write to log

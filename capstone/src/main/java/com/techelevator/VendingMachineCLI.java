@@ -30,6 +30,8 @@ public class VendingMachineCLI {
 				//create new PurchasingMenu (will need Purchasing_Menu_Options String[])
 				//or like.... menu.runPurchaseMenu(PURCHASE_MENU_OPTIONS);
 				vm.run();
+				//Put consumption here
+				
 			} else if (choice.equals(MAIN_MENU_OPTION_QUIT)) {
 				System.out.println("Ending program");
 				System.exit(0);
