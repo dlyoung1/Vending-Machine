@@ -201,7 +201,9 @@ public class VendingMachine {
 		Integer a = itemsSold.get(this.inventory.get(productCode).getProductName()) + 1;
 		itemsSold.put(this.inventory.get(productCode).getProductName(), a);
 		
-		writeToLog(this.inventory.get(productCode).getProductName(), preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+		String purchaseString = this.inventory.get(productCode).getProductName() + " " + productCode;
+		
+		writeToLog(purchaseString, preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
 		return null;
 	}	// close dispenseItem
 	
@@ -224,7 +226,7 @@ public class VendingMachine {
 			moneyString = "10.00";
 		}
 		
-		writeToLog("FEED MONEY", moneyString);
+		writeToLog("FEED MONEY:", moneyString);
 
 	}	// close addMoney
 	
@@ -254,7 +256,7 @@ public class VendingMachine {
 		}
 		
 		//Write to log
-		writeToLog("GIVE CHANGE", sS(preTransactionBalance).toString());
+		writeToLog("GIVE CHANGE:", sS(preTransactionBalance).toString());
 		
 		return changeList;
 	}	// close returnChange
@@ -266,8 +268,8 @@ public class VendingMachine {
 	 */
 	private void writeToLog(String operation, String moneyString) {
 		
-		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + " $" 
-				+ moneyString + " $" + sS(this.currentBalance) + "\n";
+		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + "\t\t $" 
+				+ moneyString + "\t\t $" + sS(this.currentBalance) + "\n";
 		
 		try {
 			Files.write(Paths.get("log.csv"), logString.getBytes(), StandardOpenOption.APPEND);
