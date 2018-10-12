@@ -52,22 +52,21 @@ public class InventoryItem {
 		}
 	}
 	
-	public String itemSound(String type) {
+	public void playItemSound() {
 		String sound = null;
-		if(type.equalsIgnoreCase("chip")) {
+		if(this.type.equalsIgnoreCase("chip")) {
 			sound = "Crunch Crunch, Yum!";
 			System.out.println(sound);
-		} else if(type.equalsIgnoreCase("candy")) {
+		} else if(this.type.equalsIgnoreCase("candy")) {
 			sound = "Munch Munch, Yum!";
 			System.out.println(sound);
-		} else if(type.equalsIgnoreCase("drink")) {
+		} else if(this.type.equalsIgnoreCase("drink")) {
 			sound = "Glug Glug, Yum!";
 			System.out.println(sound);
-		} else if(type.equalsIgnoreCase("gum")) {
+		} else if(this.type.equalsIgnoreCase("gum")) {
 			sound = "Chew Chew, Yum!";
 			System.out.println(sound);
 		}
-		return sound;
 	}
 	
 	@Override
