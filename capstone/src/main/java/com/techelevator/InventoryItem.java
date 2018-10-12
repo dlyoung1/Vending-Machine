@@ -52,7 +52,7 @@ public class InventoryItem {
 		}
 	}
 	
-	public void playItemSound() {
+	public String getItemSound() {
 		String sound = null;
 		if(this.type.equalsIgnoreCase("chip")) {
 			sound = "Crunch Crunch, Yum!";
@@ -67,6 +67,7 @@ public class InventoryItem {
 			sound = "Chew Chew, Yum!";
 			System.out.println(sound);
 		}
+		return sound;
 	}
 	
 	@Override
