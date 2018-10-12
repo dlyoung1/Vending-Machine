@@ -32,7 +32,7 @@ public class VendingMachineCLI {
 			String choice = (String)menu.getChoiceFromOptions(MAIN_MENU_OPTIONS);
 			
 			if(choice.equals(MAIN_MENU_OPTION_DISPLAY_ITEMS)) {
-				System.out.println(vm.getInventory());
+				vm.displayInventory();
 			} else if(choice.equals(MAIN_MENU_OPTION_PURCHASE)) {
 				//need to call the purchasing menu
 				//create new PurchasingMenu (will need Purchasing_Menu_Options String[])

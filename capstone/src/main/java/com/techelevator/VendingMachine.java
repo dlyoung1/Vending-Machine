@@ -141,6 +141,20 @@ public class VendingMachine {
 	}	// close run
 	
 	public void displayInventory () {
+		//Iterate and print out the following:
+		//Item Location: Item Name, Price
+		//ex: A1: Potato Crisps, $3.05
+		//if quantity = 0 then display SOLD OUT
+		for(String a : inventory.keySet()) {
+			if(inventory.get(a).getInventoryRemaining() > 0) {
+				System.out.println(a + ": " 
+						+ inventory.get(a).getProductName() 
+						+ ", $" 
+						+ sS(inventory.get(a).getPrice()));
+			} else {
+				System.out.println(a + ": SOLD OUT");
+			}
+		}
 		
 	}	// close displayInventory
 	
@@ -149,17 +163,22 @@ public class VendingMachine {
 		Scanner input = new Scanner(System.in);
 		
 		System.out.print("Please enter the product code of the item you wish to purchase: ");
-		String productCode = input.nextLine();
+		String productCode = input.nextLine().toUpperCase();
 		
 		if(this.inventory.containsKey(productCode)) {
 			if(this.inventory.get(productCode).getInventoryRemaining() > 0) {
-				return productCode;
+				if(sS(getCurrentBalance()).compareTo(sS(this.inventory.get(productCode).getPrice())) >= 0) {
+					return productCode;
+				} else {
+					System.out.println("You have not fed enough money to the vending machine to purchase this item.");
+					productCode = null;
+				}
 			} else {
 				System.out.println("I'm sorry, but we're out of that product.");
 				productCode = null;
 			}
 		} else {
-			System.out.println("That product does not exist.");
+			System.out.println("Please enter a valid product code.");
 			productCode = null;
 		}
 		return productCode;
@@ -215,18 +234,23 @@ public class VendingMachine {
 		BigDecimal preTransactionBalance = this.currentBalance;
 		BigDecimal[] changeList = new BigDecimal[] {new BigDecimal(0), new BigDecimal(0), new BigDecimal(0)};
 		
-		while(this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP).compareTo(new BigDecimal(0.25)) == 1) {	//while the balance is greater than 0.25
-			this.currentBalance = this.currentBalance.subtract(new BigDecimal(0.25));
-			changeList[0] = changeList[0].add(new BigDecimal(0.25));
+		//Coins
+		BigDecimal quarter = new BigDecimal(0.25);
+		BigDecimal dime = new BigDecimal(0.10);
+		BigDecimal nickel = new BigDecimal(0.05);
+		
+		while(sS(this.currentBalance).compareTo(sS(quarter)) >= 0) {	//while the balance is greater than 0.25
+			this.currentBalance = sS(this.currentBalance).subtract(sS(quarter));
+			changeList[0] = changeList[0].add(sS(quarter));
 		}
-		while(this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP).compareTo(new BigDecimal(0.10)) == 1) {	//while the balance is greater than 0.10
-			this.currentBalance = this.currentBalance.subtract(new BigDecimal(0.10));
-			changeList[1] = changeList[1].add(new BigDecimal(0.10));
+		while(sS(this.currentBalance).compareTo(sS(dime)) >= 0) {	//while the balance is greater than 0.10
+			this.currentBalance = sS(this.currentBalance).subtract(sS(dime));
+			changeList[1] = changeList[1].add(sS(dime));
 		}
 		//TODO fix problems here
-		while(this.currentBalance.setScale(2, BigDecimal.ROUND_HALF_UP).compareTo(new BigDecimal(0.05)) == 1) {	//while the balance is greater than 0.05
-			this.currentBalance = this.currentBalance.subtract(new BigDecimal(0.10));
-			changeList[2] = changeList[2].add(new BigDecimal(0.05));
+		while(sS(this.currentBalance).compareTo(sS(nickel)) >= 0) {	//while the balance is greater than 0.05
+			this.currentBalance = sS(this.currentBalance).subtract(sS(nickel));
+			changeList[2] = changeList[2].add(sS(nickel));
 		}
 		
 		//Write to log
