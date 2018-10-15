@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 //import com.techelevator.view.Menu;
-import com.techelevator.view.PurchaseMenu;
+//import com.techelevator.view.PurchaseMenu;
 
 public class VendingMachine {
 	
