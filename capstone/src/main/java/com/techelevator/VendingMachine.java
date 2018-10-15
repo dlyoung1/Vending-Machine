@@ -167,8 +167,8 @@ public class VendingMachine {
 	 */
 	private void writeToLog(String operation, String moneyString) {
 		
-		String logString = dtf.format(LocalDateTime.now()) + " " + operation  + "\t\t $" 
-				+ moneyString + "\t\t $" + sS(this.currentBalance) + "\n";
+		//String logString = dtf.format(LocalDateTime.now()) + " " + operation  + "\t\t $" + moneyString + "\t\t $" + sS(this.currentBalance) + "\n";
+		String logString = String.format("%-22s%-23s%-10s%-10s\n", dtf.format(LocalDateTime.now()), operation, moneyString, sS(this.currentBalance));
 		
 		try {
 			Files.write(Paths.get("log.csv"), logString.getBytes(), StandardOpenOption.APPEND);

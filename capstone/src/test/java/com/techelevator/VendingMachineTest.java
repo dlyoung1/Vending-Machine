@@ -2,6 +2,9 @@ package com.techelevator;
 
 
 import java.math.BigDecimal;
+//import java.util.LinkedHashMap;
+//import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -9,6 +12,18 @@ import org.junit.Test;
 public class VendingMachineTest {
 	
 	private VendingMachine test = new VendingMachine();
+
+	//turns out createSalesList() is a private method called by constructor
+	//Can we even test without rewriting code?
+//	@Test
+//	public void returns_accurate_sales_list() {
+//		Map<String, InventoryItem> testList = new LinkedHashMap<String, InventoryItem>();
+//		for(int i = 0; i < 3; i++) {
+//			InventoryItem placeholder = new InventoryItem("name" + i, new BigDecimal(i), "type" + i);
+//			testList.put("A" + i, placeholder);	
+//		}
+//		
+//	}
 	
 	@Test
 	public void returns_item_dispensed() {
