@@ -25,6 +25,7 @@ public class VendingMachine {
 	private static final String filePath = "vendingmachine.csv";
 	
 	private BigDecimal currentBalance;
+	private BigDecimal totalSales;
 	private Map<String, InventoryItem> inventory;
 	private Map<String, Integer> itemsSold;
 	private List<InventoryItem> purchasedItems;
@@ -37,6 +38,7 @@ public class VendingMachine {
 		this.itemsSold = createSalesList(this.inventory);
 		this.purchasedItems = new ArrayList<InventoryItem>();
 		this.currentBalance = new BigDecimal(0.0);
+		this.totalSales = setScaleShortcut(new BigDecimal(0.0));
 		
 		//create log file and logWriter at time of instantiation
 		this.log = new File("log.csv");
@@ -44,7 +46,7 @@ public class VendingMachine {
 			log.createNewFile();
 			//this.logWriter = new PrintWriter(this.log);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Log failed to generate");
 			e.printStackTrace();
 		}
 		
@@ -57,7 +59,15 @@ public class VendingMachine {
 	}	// close getCurrentBalance
 	
 	public void addToCurrentBalance (BigDecimal muns) {
-		this.currentBalance = sS(this.currentBalance).add(sS(muns));
+		this.currentBalance = setScaleShortcut(this.currentBalance).add(setScaleShortcut(muns));
+	}
+	
+	public BigDecimal getTotalSales() {
+		return this.totalSales;
+	}
+	
+	public void addToTotalSales(BigDecimal num) {
+		this.totalSales = this.totalSales.add(num);
 	}
 	
 	public Map<String, InventoryItem> getInventory () {
@@ -80,7 +90,7 @@ public class VendingMachine {
 				returnMap.put(tempArray[0], item);
 			}
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			System.out.println("Vending Machine failed to stock");
 			e.printStackTrace();
 		}
 		return returnMap;
@@ -105,6 +115,8 @@ public class VendingMachine {
 	public InventoryItem dispenseItem (String productCode) {
 
 		this.inventory.get(productCode).removeOneItem();
+		//Add price to running total for sales report
+		addToTotalSales(this.inventory.get(productCode).getPrice());
 	
 		BigDecimal preTransactionBalance = this.currentBalance;
 		this.currentBalance = this.currentBalance.subtract(this.inventory.get(productCode).getPrice());
@@ -141,21 +153,21 @@ public class VendingMachine {
 		BigDecimal dime = new BigDecimal(0.10);
 		BigDecimal nickel = new BigDecimal(0.05);
 		
-		while(sS(this.currentBalance).compareTo(sS(quarter)) >= 0) {	//while the balance is greater than 0.25
-			this.currentBalance = sS(this.currentBalance).subtract(sS(quarter));
-			changeList[0] = changeList[0].add(sS(quarter));
+		while(setScaleShortcut(this.currentBalance).compareTo(setScaleShortcut(quarter)) >= 0) {	//while the balance is greater than 0.25
+			this.currentBalance = setScaleShortcut(this.currentBalance).subtract(setScaleShortcut(quarter));
+			changeList[0] = changeList[0].add(setScaleShortcut(quarter));
 		}
-		while(sS(this.currentBalance).compareTo(sS(dime)) >= 0) {	//while the balance is greater than 0.10
-			this.currentBalance = sS(this.currentBalance).subtract(sS(dime));
-			changeList[1] = changeList[1].add(sS(dime));
+		while(setScaleShortcut(this.currentBalance).compareTo(setScaleShortcut(dime)) >= 0) {	//while the balance is greater than 0.10
+			this.currentBalance = setScaleShortcut(this.currentBalance).subtract(setScaleShortcut(dime));
+			changeList[1] = changeList[1].add(setScaleShortcut(dime));
 		}
-		while(sS(this.currentBalance).compareTo(sS(nickel)) >= 0) {	//while the balance is greater than 0.05
-			this.currentBalance = sS(this.currentBalance).subtract(sS(nickel));
-			changeList[2] = changeList[2].add(sS(nickel));
+		while(setScaleShortcut(this.currentBalance).compareTo(setScaleShortcut(nickel)) >= 0) {	//while the balance is greater than 0.05
+			this.currentBalance = setScaleShortcut(this.currentBalance).subtract(setScaleShortcut(nickel));
+			changeList[2] = changeList[2].add(setScaleShortcut(nickel));
 		}
 		
 		//Write to log
-		writeToLog("GIVE CHANGE:", sS(preTransactionBalance).toString());
+		writeToLog("GIVE CHANGE:", setScaleShortcut(preTransactionBalance).toString());
 		
 		return changeList;
 	}	// close returnChange
@@ -168,7 +180,7 @@ public class VendingMachine {
 	private void writeToLog(String operation, String moneyString) {
 		
 		//String logString = dtf.format(LocalDateTime.now()) + " " + operation  + "\t\t $" + moneyString + "\t\t $" + sS(this.currentBalance) + "\n";
-		String logString = String.format("%-22s%-23s%-10s%-10s\n", dtf.format(LocalDateTime.now()), operation, moneyString, sS(this.currentBalance));
+		String logString = String.format("%-22s%-23s%-10s%-10s\n", dtf.format(LocalDateTime.now()), operation, moneyString, setScaleShortcut(this.currentBalance));
 		
 		try {
 			Files.write(Paths.get("log.csv"), logString.getBytes(), StandardOpenOption.APPEND);
@@ -182,7 +194,7 @@ public class VendingMachine {
 	 * BigDecimal SetScale
 	 * @param bd
 	 */
-	public BigDecimal sS(BigDecimal bd) {
+	public BigDecimal setScaleShortcut(BigDecimal bd) {
 		//so I don't have to write setScale so many times and clutter things up.
 		return bd.setScale(2, BigDecimal.ROUND_HALF_UP);
 	}

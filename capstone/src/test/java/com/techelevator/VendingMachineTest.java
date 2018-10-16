@@ -71,38 +71,38 @@ public class VendingMachineTest {
 	public void updates_balance_based_on_string_amount() {
 		test.updateBalance("39");
 		BigDecimal result = test.getCurrentBalance();
-		Assert.assertEquals(test.sS(new BigDecimal(39)), result);
+		Assert.assertEquals(test.setScaleShortcut(new BigDecimal(39)), result);
 		
 		test.updateBalance("150");
 		result = test.getCurrentBalance();
-		Assert.assertEquals(test.sS(new BigDecimal(189)), result);
+		Assert.assertEquals(test.setScaleShortcut(new BigDecimal(189)), result);
 		
 		test.updateBalance("-30");
 		result = test.getCurrentBalance();
-		Assert.assertEquals(test.sS(new BigDecimal(159)), result);
+		Assert.assertEquals(test.setScaleShortcut(new BigDecimal(159)), result);
 		
 		test.updateBalance("-159");
 		result = test.getCurrentBalance();
-		Assert.assertEquals(test.sS(new BigDecimal(0)), result);
+		Assert.assertEquals(test.setScaleShortcut(new BigDecimal(0)), result);
 		
 		test.updateBalance(Integer.toString(Integer.MAX_VALUE));
 		result = test.getCurrentBalance();
-		Assert.assertEquals(test.sS(new BigDecimal(Integer.MAX_VALUE)), result);
+		Assert.assertEquals(test.setScaleShortcut(new BigDecimal(Integer.MAX_VALUE)), result);
 		
 		test.updateBalance(Integer.toString(Integer.MIN_VALUE));
 		result = test.getCurrentBalance();
-		Assert.assertEquals(test.sS(new BigDecimal(-1)), result);
+		Assert.assertEquals(test.setScaleShortcut(new BigDecimal(-1)), result);
 	}
 	
 	@SuppressWarnings("deprecation")
 	@Test
 	public void returns_correct_amount_of_change() {
-		BigDecimal[] expected = new BigDecimal[] {test.sS(new BigDecimal(1)), test.sS(new BigDecimal(0.10)), test.sS(new BigDecimal(0.05))};
+		BigDecimal[] expected = new BigDecimal[] {test.setScaleShortcut(new BigDecimal(1)), test.setScaleShortcut(new BigDecimal(0.10)), test.setScaleShortcut(new BigDecimal(0.05))};
 		test.updateBalance("1.15");
 		BigDecimal[] result = test.returnChange();
 		Assert.assertEquals(expected, result);
 		
-		expected = new BigDecimal[] {test.sS(new BigDecimal(8.25)), test.sS(new BigDecimal(0.10)), test.sS(new BigDecimal(0.05))};
+		expected = new BigDecimal[] {test.setScaleShortcut(new BigDecimal(8.25)), test.setScaleShortcut(new BigDecimal(0.10)), test.setScaleShortcut(new BigDecimal(0.05))};
 		test.updateBalance("8.40");
 		result = test.returnChange();
 		Assert.assertEquals(expected, result);

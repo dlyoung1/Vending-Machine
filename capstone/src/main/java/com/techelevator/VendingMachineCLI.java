@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Scanner;
 
 import com.techelevator.view.Menu;
-import com.techelevator.view.PurchaseMenu;
 
 public class VendingMachineCLI {
 
@@ -32,7 +31,8 @@ public class VendingMachineCLI {
 	private static final String ADD_MONEY_TWO = "Add $2";
 	private static final String ADD_MONEY_FIVE = "Add $5";
 	private static final String ADD_MONEY_TEN = "Add $10";
-	private static final String[] ADD_MONEY_OPTIONS = {ADD_MONEY_ONE, ADD_MONEY_TWO, ADD_MONEY_FIVE, ADD_MONEY_TEN};
+	private static final String ADD_MONEY_QUIT = "Go Back";
+	private static final String[] ADD_MONEY_OPTIONS = {ADD_MONEY_ONE, ADD_MONEY_TWO, ADD_MONEY_FIVE, ADD_MONEY_TEN, ADD_MONEY_QUIT};
 	
 	private Menu menu;
 	private VendingMachine vm;
@@ -69,16 +69,18 @@ public class VendingMachineCLI {
 	}	// close run
 	
 	private void runPurchasingMenu() {
-		PurchaseMenu pMenu = new PurchaseMenu(System.in, System.out);
+		//PurchaseMenu pMenu = new PurchaseMenu(System.in, System.out);
 		
 		boolean transactionComplete = false;
 		
 		while(!transactionComplete) {
-			String choice = (String)pMenu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS, vm.getCurrentBalance());
+			String choice = (String)menu.getChoiceFromOptions(PURCHASE_MENU_OPTIONS, vm.getCurrentBalance());
 			
 			if(choice.equals(PURCHASE_MENU_OPTION_FEED)) {
 				addMoney();
 			} else if(choice.equals(PURCHASE_MENU_OPTION_SELECT)) {
+				displayInventory();
+				System.out.println(""); 	//extra space for formatting
 				String itemSelect = validateItemSelectionFromUser();
 				if(itemSelect != null) {
 					InventoryItem purchasedItem = vm.dispenseItem(itemSelect);
@@ -87,10 +89,10 @@ public class VendingMachineCLI {
 			} else if(choice.equals(PURCHASE_MENU_OPTION_FINISH)) {
 				System.out.println("Thank you for your purchase(s)!");
 				BigDecimal[] change = vm.returnChange();
-				System.out.println("Your change is: $" + vm.sS(change[0]) + " in quarters, $" 
-						+ vm.sS(change[1]) + " in dimes, and $" 
-						+ vm.sS(change[2]) + " in nickels.");
-				System.out.println("Current Balance: $" + vm.sS(vm.getCurrentBalance()));
+				System.out.println("Your change is: $" + vm.setScaleShortcut(change[0]) + " in quarters, $" 
+						+ vm.setScaleShortcut(change[1]) + " in dimes, and $" 
+						+ vm.setScaleShortcut(change[2]) + " in nickels.");
+				System.out.println("Current Balance: $" + vm.setScaleShortcut(vm.getCurrentBalance()));
 				transactionComplete = true;
 			}
 		}	// close while
@@ -100,10 +102,11 @@ public class VendingMachineCLI {
 	public void displayInventory () {
 		for(String a : vm.getInventory().keySet()) {
 			if(vm.getInventory().get(a).getInventoryRemaining() > 0) {
-				System.out.println(a + ": " 
-						+ vm.getInventory().get(a).getProductName() 
-						+ ", $" 
-						+ vm.sS(vm.getInventory().get(a).getPrice()));
+				System.out.println(String.format("%-4s%-19s%-7s%-10s", 
+						a + ":", 
+						vm.getInventory().get(a).getProductName(), 
+						"$" + vm.setScaleShortcut(vm.getInventory().get(a).getPrice()) + ",", 
+						vm.getInventory().get(a).getInventoryRemaining() + " left"));
 			} else {
 				System.out.println(a + ": SOLD OUT");
 			}
@@ -112,17 +115,22 @@ public class VendingMachineCLI {
 	}	// close displayInventory
 
 	public void addMoney () {
-		//validate user input and add money to currentBalance
-		String choice = (String)menu.getChoiceFromOptions(ADD_MONEY_OPTIONS);
+		boolean isDone = false;
+		while(!isDone) {
+			//validate user input and add money to currentBalance
+			String choice = (String)menu.getChoiceFromOptions(ADD_MONEY_OPTIONS, vm.getCurrentBalance());
 			
-		if(choice.equals(ADD_MONEY_ONE)) {
-			vm.updateBalance("1.00");
-		} else if(choice.equals(ADD_MONEY_TWO)) {
-			vm.updateBalance("2.00");
-		} else if(choice.equals(ADD_MONEY_FIVE)) {
-			vm.updateBalance("5.00");
-		} else if(choice.equals(ADD_MONEY_TEN)) {
-			vm.updateBalance("10.00");
+			if(choice.equals(ADD_MONEY_ONE)) {
+				vm.updateBalance("1.00");
+			} else if(choice.equals(ADD_MONEY_TWO)) {
+				vm.updateBalance("2.00");
+			} else if(choice.equals(ADD_MONEY_FIVE)) {
+				vm.updateBalance("5.00");
+			} else if(choice.equals(ADD_MONEY_TEN)) {
+				vm.updateBalance("10.00");
+			} else if(choice.equals(ADD_MONEY_QUIT)) {
+				isDone = true;
+			}
 		}
 	}	// close addMoney
 	
@@ -135,7 +143,7 @@ public class VendingMachineCLI {
 
 		if(vm.getInventory().containsKey(productCode)) {
 			if(vm.getInventory().get(productCode).getInventoryRemaining() > 0) {
-				if(vm.sS(vm.getCurrentBalance()).compareTo(vm.sS(vm.getInventory().get(productCode).getPrice())) >= 0) {
+				if(vm.setScaleShortcut(vm.getCurrentBalance()).compareTo(vm.setScaleShortcut(vm.getInventory().get(productCode).getPrice())) >= 0) {
 					return productCode;
 				} else {
 					System.out.println("You have not fed enough money to the vending machine to purchase this item.");
@@ -170,6 +178,7 @@ public class VendingMachineCLI {
 				String salesString = a + "|" + salesOutput.get(a) + "\n";
 				Files.write(Paths.get("SalesReport.csv"), salesString.getBytes(), StandardOpenOption.APPEND);
 			}
+			Files.write(Paths.get("SalesReport.csv"), ("\n**TOTAL SALES** $" + vm.getTotalSales()).getBytes(), StandardOpenOption.APPEND);
 		} catch (IOException e) {
 			System.out.println("ERROR: WRITE TO SALES REPORT FAILED");
 			e.printStackTrace();
