@@ -60,6 +60,8 @@ public class VendingMachineCLI {
 				for(int i = 0; i < eatThis.size(); i++) {
 					System.out.println(eatThis.get(i).getItemSound());
 				}		
+				//clean out consumed items
+				vm.resetPurchasedItems();
 			} else if (choice.equals(MAIN_MENU_OPTION_QUIT)) {
 				printSalesReport();
 				System.out.println("Ending program");
@@ -89,10 +91,10 @@ public class VendingMachineCLI {
 			} else if(choice.equals(PURCHASE_MENU_OPTION_FINISH)) {
 				System.out.println("Thank you for your purchase(s)!");
 				BigDecimal[] change = vm.returnChange();
-				System.out.println("Your change is: $" + vm.setScaleShortcut(change[0]) + " in quarters, $" 
-						+ vm.setScaleShortcut(change[1]) + " in dimes, and $" 
-						+ vm.setScaleShortcut(change[2]) + " in nickels.");
-				System.out.println("Current Balance: $" + vm.setScaleShortcut(vm.getCurrentBalance()));
+				System.out.println("Your change is: $" + change[0] + " in quarters, $" 
+						+ change[1] + " in dimes, and $" 
+						+ change[2] + " in nickels.");
+				System.out.println("Current Balance: $" + vm.getCurrentBalance());
 				transactionComplete = true;
 			}
 		}	// close while
@@ -105,7 +107,7 @@ public class VendingMachineCLI {
 				System.out.println(String.format("%-4s%-19s%-7s%-10s", 
 						a + ":", 
 						vm.getInventory().get(a).getProductName(), 
-						"$" + vm.setScaleShortcut(vm.getInventory().get(a).getPrice()) + ",", 
+						"$" + vm.getInventory().get(a).getPrice() + ",", 
 						vm.getInventory().get(a).getInventoryRemaining() + " left"));
 			} else {
 				System.out.println(a + ": SOLD OUT");
@@ -143,7 +145,7 @@ public class VendingMachineCLI {
 
 		if(vm.getInventory().containsKey(productCode)) {
 			if(vm.getInventory().get(productCode).getInventoryRemaining() > 0) {
-				if(vm.setScaleShortcut(vm.getCurrentBalance()).compareTo(vm.setScaleShortcut(vm.getInventory().get(productCode).getPrice())) >= 0) {
+				if(vm.getCurrentBalance().compareTo(vm.getInventory().get(productCode).getPrice()) >= 0) {
 					return productCode;
 				} else {
 					System.out.println("You have not fed enough money to the vending machine to purchase this item.");

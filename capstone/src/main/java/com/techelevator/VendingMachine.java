@@ -36,8 +36,8 @@ public class VendingMachine {
 	public VendingMachine () {
 		this.inventory = stockVendingMachine();
 		this.itemsSold = createSalesList(this.inventory);
-		this.purchasedItems = new ArrayList<InventoryItem>();
-		this.currentBalance = new BigDecimal(0.0);
+		resetPurchasedItems();
+		this.currentBalance = setScaleShortcut(new BigDecimal(0.0));
 		this.totalSales = setScaleShortcut(new BigDecimal(0.0));
 		
 		//create log file and logWriter at time of instantiation
@@ -59,7 +59,7 @@ public class VendingMachine {
 	}	// close getCurrentBalance
 	
 	public void addToCurrentBalance (BigDecimal muns) {
-		this.currentBalance = setScaleShortcut(this.currentBalance).add(setScaleShortcut(muns));
+		this.currentBalance = this.currentBalance.add(muns);
 	}
 	
 	public BigDecimal getTotalSales() {
@@ -73,6 +73,10 @@ public class VendingMachine {
 	public Map<String, InventoryItem> getInventory () {
 		return this.inventory;
 	}	// close getInventory
+	
+	public void resetPurchasedItems() {
+		this.purchasedItems = new ArrayList<InventoryItem>();
+	}
 	
 	public List<InventoryItem> getPurchasedItems() {
 		return this.purchasedItems;
@@ -132,7 +136,7 @@ public class VendingMachine {
 		
 		String purchaseString = this.inventory.get(productCode).getProductName() + " " + productCode;
 		
-		writeToLog(purchaseString, preTransactionBalance.setScale(2, BigDecimal.ROUND_HALF_UP).toString());
+		writeToLog(purchaseString, preTransactionBalance.toString());
 		
 		return this.inventory.get(productCode);
 	}	// close dispenseItem
@@ -149,25 +153,25 @@ public class VendingMachine {
 		BigDecimal[] changeList = new BigDecimal[] {new BigDecimal(0), new BigDecimal(0), new BigDecimal(0)};
 		
 		//Coins
-		BigDecimal quarter = new BigDecimal(0.25);
-		BigDecimal dime = new BigDecimal(0.10);
-		BigDecimal nickel = new BigDecimal(0.05);
+		BigDecimal quarter = setScaleShortcut(new BigDecimal(0.25));
+		BigDecimal dime = setScaleShortcut(new BigDecimal(0.10));
+		BigDecimal nickel = setScaleShortcut(new BigDecimal(0.05));
 		
-		while(setScaleShortcut(this.currentBalance).compareTo(setScaleShortcut(quarter)) >= 0) {	//while the balance is greater than 0.25
-			this.currentBalance = setScaleShortcut(this.currentBalance).subtract(setScaleShortcut(quarter));
-			changeList[0] = changeList[0].add(setScaleShortcut(quarter));
+		while(this.currentBalance.compareTo(quarter) >= 0) {	//while the balance is greater than 0.25
+			this.currentBalance = this.currentBalance.subtract(quarter);
+			changeList[0] = changeList[0].add(quarter);
 		}
-		while(setScaleShortcut(this.currentBalance).compareTo(setScaleShortcut(dime)) >= 0) {	//while the balance is greater than 0.10
-			this.currentBalance = setScaleShortcut(this.currentBalance).subtract(setScaleShortcut(dime));
-			changeList[1] = changeList[1].add(setScaleShortcut(dime));
+		while(this.currentBalance.compareTo(dime) >= 0) {	//while the balance is greater than 0.10
+			this.currentBalance = this.currentBalance.subtract(dime);
+			changeList[1] = changeList[1].add(dime);
 		}
-		while(setScaleShortcut(this.currentBalance).compareTo(setScaleShortcut(nickel)) >= 0) {	//while the balance is greater than 0.05
-			this.currentBalance = setScaleShortcut(this.currentBalance).subtract(setScaleShortcut(nickel));
-			changeList[2] = changeList[2].add(setScaleShortcut(nickel));
+		while(this.currentBalance.compareTo(nickel) >= 0) {	//while the balance is greater than 0.05
+			this.currentBalance = this.currentBalance.subtract(nickel);
+			changeList[2] = changeList[2].add(nickel);
 		}
 		
 		//Write to log
-		writeToLog("GIVE CHANGE:", setScaleShortcut(preTransactionBalance).toString());
+		writeToLog("GIVE CHANGE:", preTransactionBalance.toString());
 		
 		return changeList;
 	}	// close returnChange
@@ -179,8 +183,16 @@ public class VendingMachine {
 	 */
 	private void writeToLog(String operation, String moneyString) {
 		
-		//String logString = dtf.format(LocalDateTime.now()) + " " + operation  + "\t\t $" + moneyString + "\t\t $" + sS(this.currentBalance) + "\n";
-		String logString = String.format("%-22s%-23s%-10s%-10s\n", dtf.format(LocalDateTime.now()), operation, moneyString, setScaleShortcut(this.currentBalance));
+		//Sample: 
+		/*
+		10/20/2018 1:33:53 PM FEED MONEY:            1.00      3.00      
+		10/20/2018 1:34:02 PM Stackers A2            3.00      1.55      
+		10/20/2018 1:34:09 PM Mountain Melter C3     1.55      0.05      
+		10/20/2018 1:34:12 PM GIVE CHANGE:           0.05      0.00
+		*/
+		//writeToLog can handle the date, but needs to know the operation, transaction amount, and balance.
+		//Does need 2-3 values passed in. Def 3 if converted to own class
+		String logString = String.format("%-22s%-23s%-10s%-10s\n", dtf.format(LocalDateTime.now()), operation, moneyString, this.currentBalance);
 		
 		try {
 			Files.write(Paths.get("log.csv"), logString.getBytes(), StandardOpenOption.APPEND);
